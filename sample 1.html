@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WebScockets 101</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+<link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div id="mario-chat">
+<div id="chat-window">
+<div id="output"></div>
+<div id="feedback"></div>
+</div>
+</div>
+<div class="userBox">
+<div class="user1 user">
+<input id="user1Handle" class="allUsersHandle" type="text"
+placeholder="Avtar name" />
+<input id="user1Message" class="allUsersMessage" type="text"
+placeholder="Message" />
+<button id="user1Send" class="userSendBtn">Send</button>
+</div>
+<div class="user2 user">
+<input id="user2Handle" class="allUsersHandle" type="text"
+placeholder="Avtar name" />
+<input id="user2Message" class="allUsersMessage" type="text"
+placeholder="Message" />
+<button id="user2Send" class="userSendBtn">Send</button>
+</div>
+</div>
+</body>
+<script src="/chat.js"></script>
+</html>
+var express = require('express');
+var socket = require('socket.io');
+// App setup
+var app = express();
+var server = app.listen(4000, function(){
+console.log('listening for requests on port 4000,');
+});
+// Static files
+app.use(express.static('public'));
+// Socket setup & pass server
+var io = socket(server);
+io.on('connection', (socket) => {
+console.log('made socket connection', socket.id);
+// Handle chat event
+socket.on('chatUser1', function(data){
+io.sockets.emit('chatUser1', data);
+});
+socket.on('chatUser2', function(data){
+io.sockets.emit('chatUser2', data);
+});
+// Handle typing event
+socket.on('userTyping', function(data){
+io.sockets.emit('userTyping', data);
+});
+});
